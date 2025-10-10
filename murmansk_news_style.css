@@ -1,0 +1,74 @@
+/* style.css */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  color: #222;
+}
+
+header {
+  background-color: #007bff;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+header nav a {
+  color: #fff;
+  margin: 0 10px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+header nav a:hover {
+  text-decoration: underline;
+}
+
+main {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+.news {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+article {
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+article img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+article h2 {
+  font-size: 20px;
+  margin: 10px;
+}
+
+article p {
+  font-size: 16px;
+  margin: 10px;
+}
+
+article .date {
+  display: block;
+  font-size: 14px;
+  color: #555;
+  margin: 0 10px 10px;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #eee;
+  margin-top: 20px;
+}
