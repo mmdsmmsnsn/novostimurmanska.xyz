@@ -1,363 +1,474 @@
 # novostimurmanska.xyz
 новости великой мурманской депржави 
 
-<html lang="ru">
+<html lang="uk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Новости Мурманска 🐄 — Интерактив</title>
-  <style>
-    :root{
-      --bg-0:#071424; --bg-1:#0f2b3a; --panel:#0f2430; --accent:#ffd166; --muted:#9fb3bf; --cow:#7ee1a8; --pig:#ff8fa3;
-      --glass: rgba(255,255,255,0.03);
-      --max:1200px; --radius:12px;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,Segoe UI,system-ui,Arial;color:#e6f0f2;background:linear-gradient(180deg,var(--bg-0),var(--bg-1));-webkit-font-smoothing:antialiased}
-    header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:linear-gradient(90deg,#0b2b3a,#07202a);box-shadow:0 6px 20px rgba(2,6,23,0.6)}
-    .brand{display:flex;align-items:center;gap:14px}
-    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ffb86b);display:flex;align-items:center;justify-content:center;font-weight:800;color:#082;box-shadow:0 6px 20px rgba(0,0,0,0.3)}
-    h1{margin:0;font-size:18px}
-    .tagline{color:var(--muted);font-size:13px}
-    nav{display:flex;gap:10px;align-items:center}
-    .nav-btn{background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer}
-    .nav-btn.active{background:linear-gradient(90deg,rgba(255,209,102,0.12),rgba(126,225,168,0.06));color:var(--accent);border-color:rgba(255,209,102,0.12)}
-    main{max-width:var(--max);margin:22px auto;padding:18px;display:grid;grid-template-columns:1fr 360px;gap:20px}
-
-    /* left */
-    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);}
-    .hero{display:flex;gap:16px;align-items:center}
-    .hero .lead{flex:1}
-    .lead h2{margin:0 0 6px 0}
-    .muted{color:var(--muted);font-size:13px}
-
-    /* map */
-    #mapWrap{height:520px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#06202a,#0a2e3b);display:flex;flex-direction:column}
-    .mapControls{display:flex;gap:8px;padding:10px;align-items:center}
-    .legend{display:flex;gap:10px;align-items:center;margin-left:auto;margin-right:8px}
-    .legend span{display:flex;gap:8px;align-items:center;font-size:13px}
-    .swatch{width:18px;height:12px;border-radius:3px}
-    #mapCanvas{flex:1;width:100%;display:block}
-    #progressChart{height:140px;width:100%;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);}
-
-    /* right */
-    aside .widget{margin-bottom:14px}
-    .widget h3{margin:0 0 8px 0}
-    .list{display:flex;flex-direction:column;gap:8px}
-    .newsItem{background:var(--panel);padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
-
-    /* games */
-    #gamesWrap{display:flex;flex-direction:column;gap:12px}
-    .gameCanvas{border-radius:10px;background:#081824;width:100%;height:320px}
-    .controls{display:flex;gap:8px}
-
-    footer{text-align:center;padding:18px;color:var(--muted)}
-
-    @media(max-width:980px){main{grid-template-columns:1fr} #mapWrap{height:420px}}
-
-    /* small utils */
-    .btn{background:var(--accent);color:#032;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700}
-    a.tg{background:#2a9d8f;color:#021;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:700}
-  </style>
-</head>
-<body>
-  <header>
-    <div class="brand">
-      <div class="logo">М</div>
-      <div>
-        <h1>Новости Мурманска — Все жители — коровы 🐄</h1>
-        <div class="tagline">Рофл-издания, юмор и эпопеи коровьего величия</div>
-      </div>
-    </div>
-    <nav>
-      <button class="nav-btn active" data-section="news">Новости</button>
-      <button class="nav-btn" data-section="war">Боевые действия</button>
-      <button class="nav-btn" data-section="games">Мини-игры</button>
-      <a class="tg" href="https://t.me/NovostiMyyyrmanska" target="_blank">Наш Telegram</a>
-    </nav>
-  </header>
-
-  <main>
-    <div>
-      <div class="panel" id="newsPanel">
-        <div class="hero">
-          <div class="lead">
-            <h2>Главные новости (только шутки — все жители коровы)</h2>
-            <div class="muted">Подмигнуть нельзя — коровы следят</div>
-          </div>
-          <div style="text-align:right">
-            <button id="refresh" class="btn">Обновить (рандом)</button>
-          </div>
-        </div>
-
-        <div id="newsList" style="margin-top:14px" class="list">
-          <!-- заполнится скриптом -->
-        </div>
-      </div>
-
-      <!-- WAR section -->
-      <div class="panel" id="warPanel" style="margin-top:18px;display:none">
-        <h3 style="margin-top:0">Боевые действия — Карта захватов</h3>
-        <div id="mapWrap">
-          <div class="mapControls">
-            <div class="muted">Сценарий: Рофл-война коров против свиней</div>
-            <div class="legend">
-              <span><i class="swatch" style="background:var(--cow)"></i> Коровы</span>
-              <span><i class="swatch" style="background:var(--pig)"></i> Свинки</span>
-              <span><i class="swatch" style="background:rgba(255,255,255,0.08)"></i> Нейтрально</span>
-            </div>
-          </div>
-          <canvas id="mapCanvas"></canvas>
-          <canvas id="progressChart"></canvas>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
-          <button id="simToggle" class="btn">Пауза симуляции</button>
-          <div class="muted">Симуляция продвижения за последние 24 часа (обновляется)</div>
-        </div>
-      </div>
-
-      <!-- GAMES section -->
-      <div class="panel" id="gamesPanel" style="margin-top:18px;display:none">
-        <h3 style="margin-top:0">Мини-игры — Турнир коров</h3>
-        <div id="gamesWrap">
-          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-            <button class="nav-btn" data-game="catch">Поймай ведро</button>
-            <button class="nav-btn" data-game="dodge">Уклоняйся от свинок</button>
-            <button id="resetGame" class="btn">Сброс</button>
-            <div class="muted" style="margin-left:auto">Лучший результат сохранится локально</div>
-          </div>
-
-          <canvas id="gameCanvas" class="gameCanvas"></canvas>
-          <div style="display:flex;gap:10px;margin-top:8px;align-items:center">
-            <div class="muted">Очки: <strong id="gameScore">0</strong></div>
-            <div class="muted">Время: <strong id="gameTime">0</strong>с</div>
-            <button id="startGameBtn" class="btn">Старт</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <aside>
-      <div class="widget panel">
-        <h3>Популярные рофлы</h3>
-        <div id="sideNews" class="list">
-          <!-- side news -->
-        </div>
-      </div>
-
-      <div class="widget panel">
-        <h3>Статистика фракций</h3>
-        <div class="muted">Коровы контролируют <strong id="cowPercent">0%</strong>, свинки — <strong id="pigPercent">0%</strong></div>
-      </div>
-
-      <div class="widget panel">
-        <h3>О проекте</h3>
-        <div class="muted">Сайт-рифма и сатира. Все события выдуманы. Все жители — коровы. Не воспринимать всерьёз.</div>
-      </div>
-    </aside>
-  </main>
-
-  <footer>© 2025 Новости Мурманска — Рофл-канал · <a href="https://t.me/NovostiMyyyrmanska" target="_blank" style="color:var(--accent)">Наш Telegram</a></footer>
-
-  <script>
-    // --- Utilities ---
-    const rand = (a,b)=> Math.floor(Math.random()*(b-a+1))+a;
-
-    // --- News (satire) ---
-    const sampleNews = [
-      {t:'Коровы объявили забастовку молока — требуют поднять цену на сено',d:'Сегодня утром стада встали на пастбище и потребовали...'},
-      {t:'Мурманская корова стала депутатом — она обещает больше лугов',d:'Программа: больше тени, меньше доения.'},
-      {t:'Пингвины уступили коровам тротуар — шум на набережной',d:'Коровы заняли лучшие места для селфи.'},
-      {t:'Открытие памятника лучшему вёдру — массовый марш коров',d:'Ведро благословлено.'}
-    ];
-
-    function renderNews(){
-      const list = document.getElementById('newsList'); list.innerHTML='';
-      for(let i=0;i<4;i++){
-        const it = sampleNews[rand(0,sampleNews.length-1)];
-        const el = document.createElement('div'); el.className='newsItem';
-        el.innerHTML = `<strong>🐄 ${it.t}</strong><div class="muted">${it.d}</div>`;
-        list.appendChild(el);
-      }
-      // side
-      const side = document.getElementById('sideNews'); side.innerHTML='';
-      for(let i=0;i<3;i++){ const it=sampleNews[rand(0,sampleNews.length-1)]; const s=document.createElement('div'); s.className='newsItem'; s.innerHTML=`<strong>🐮 ${it.t}</strong><div class=\"muted\">${it.d}</div>`; side.appendChild(s);} 
-    }
-
-    document.getElementById('refresh').addEventListener('click',renderNews);
-    renderNews();
-
-    // --- Navigation ---
-    document.querySelectorAll('.nav-btn[data-section]').forEach(btn=>btn.addEventListener('click',e=>{
-      document.querySelectorAll('.nav-btn[data-section]').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      const sec = btn.dataset.section;
-      document.getElementById('newsPanel').style.display = sec==='news'? 'block':'none';
-      document.getElementById('warPanel').style.display = sec==='war'? 'block':'none';
-      document.getElementById('gamesPanel').style.display = sec==='games'? 'block':'none';
-    }));
-
-    // --- WAR: Map simulation ---
-    const mapCanvas = document.getElementById('mapCanvas'); const mapCtx = mapCanvas.getContext('2d');
-    const chart = document.getElementById('progressChart'); const chartCtx = chart.getContext('2d');
-    let simRunning = true;
-    const cols = 12, rows = 8; // grid for territories
-    let territories = [];
-
-    function resizeMap(){
-      mapCanvas.width = mapCanvas.clientWidth; mapCanvas.height = mapCanvas.clientHeight - 140; // leave room for chart canvas
-      chart.width = chart.clientWidth; chart.height = 140;
-      drawMap(); drawChart(); updateStats();
-    }
-    window.addEventListener('resize',resizeMap);
-
-    // init territories grid
-    function initTerritories(){
-      territories = [];
-      for(let r=0;r<rows;r++){
-        for(let c=0;c<cols;c++){
-          const owner = Math.random()>0.5? 'cow':'pig';
-          territories.push({r,c,owner,strength:rand(10,90)});
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новини Мууурманська — Фронт "Корова vs Свиня"</title>
+    <!-- Завантаження Tailwind CSS та шрифту Inter -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Стилі для загального вигляду */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f3e8; /* Світлий пастельний фон */
+            color: #3b281f;
         }
-      }
-    }
-    initTerritories();
+        .container {
+            max-width: 1280px;
+        }
+        /* Стилі для Карти Бойових Дій (Canvas) */
+        #warMapCanvas {
+            display: block;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            margin-top: 1rem;
+        }
+        /* Анімація для кнопок-вкладок */
+        .tab-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px #e5a400; /* Тінь під кнопкою */
+        }
+        .tab-button:hover:not(.active) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px #e5a400;
+        }
+        .tab-button.active {
+            transform: translateY(2px);
+            box-shadow: none; /* "Натиснутий" вигляд */
+            background-color: #e5a400 !important;
+        }
+        /* Стилі для кнопки ТГК */
+        #tgk-button {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        #tgk-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px -5px rgba(26, 153, 230, 0.5);
+        }
+        /* Стилі для міні-гри */
+        #milk-button {
+            transition: transform 0.1s;
+        }
+        #milk-button:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
 
-    function drawMap(){
-      const w = mapCanvas.width; const h = mapCanvas.height; mapCtx.clearRect(0,0,w,h);
-      const cellW = w/cols, cellH = h/rows;
-      // background grid texture
-      mapCtx.fillStyle = 'rgba(255,255,255,0.02)'; mapCtx.fillRect(0,0,w,h);
-      territories.forEach(t=>{
-        const x = t.c*cellW, y = t.r*cellH;
-        mapCtx.fillStyle = t.owner==='cow' ? 'rgba(126,225,168,0.95)' : 'rgba(255,143,163,0.95)';
-        mapCtx.fillRect(x+2,y+2,cellW-4,cellH-4);
-        // strength overlay
-        mapCtx.fillStyle = 'rgba(0,0,0,0.12)'; mapCtx.fillRect(x+2,y+cellH-18,cellW-4,12);
-        mapCtx.fillStyle = 'rgba(255,255,255,0.9)'; mapCtx.font = '10px Inter'; mapCtx.fillText(t.strength+'%', x+6, y+cellH-8);
-      });
-      // labels
-      mapCtx.fillStyle='rgba(255,255,255,0.06)'; mapCtx.font='14px Inter'; mapCtx.fillText('Интерактивная карта — рыцари-пастухи и их коровы',8,16);
-    }
+    <div class="container mx-auto p-4 md:p-8">
+        <!-- Шапка -->
+        <header class="text-center mb-8 bg-yellow-500/90 p-4 rounded-xl shadow-xl">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight">
+                🐮 Новини Мууурманська 🐄
+            </h1>
+            <p class="text-xl text-yellow-900 mt-2 font-semibold">Місто Корів. Серйозні події, які викликають усмішку.</p>
+        </header>
 
-    // simulate front movement: record cow-control percent per hour for last 24h
-    let timeline = Array.from({length:24},()=>rand(30,70));
-    function stepSimulation(){
-      if(!simRunning) return;
-      // random flips
-      for(let i=0;i<rand(1,3);i++){
-        const idx = rand(0,territories.length-1); territories[idx].owner = Math.random()>0.5? 'cow':'pig'; territories[idx].strength = Math.max(5,Math.min(99,territories[idx].strength + rand(-8,8)));
-      }
-      // compute cow percent
-      const cowCount = territories.filter(t=>t.owner==='cow').length; const cowPercent = Math.round(cowCount/territories.length*100);
-      timeline.shift(); timeline.push(cowPercent);
-      drawMap(); drawChart(); updateStats();
-    }
-    setInterval(stepSimulation, 2500);
+        <!-- Навігація / Вкладки -->
+        <nav class="flex justify-center space-x-3 mb-8">
+            <button onclick="showView('news')" id="tab-news" class="tab-button active bg-yellow-400 text-yellow-900 font-bold py-3 px-6 rounded-xl text-lg hover:bg-yellow-500">
+                📰 Новини
+            </button>
+            <button onclick="showView('games')" id="tab-games" class="tab-button bg-yellow-400 text-yellow-900 font-bold py-3 px-6 rounded-xl text-lg hover:bg-yellow-500">
+                🕹️ Міні-ігри
+            </button>
+            <button onclick="showView('war')" id="tab-war" class="tab-button bg-yellow-400 text-yellow-900 font-bold py-3 px-6 rounded-xl text-lg hover:bg-yellow-500">
+                ⚔️ Бойові дії
+            </button>
+        </nav>
 
-    document.getElementById('simToggle').addEventListener('click',()=>{
-      simRunning = !simRunning; document.getElementById('simToggle').textContent = simRunning? 'Пауза симуляции' : 'Запустить симуляцию';
-    });
+        <!-- Кнопка Telegram -->
+        <div class="flex justify-center mb-8">
+            <a id="tgk-button" href="https://t.me/NovostiMyyyrmanska" target="_blank" class="flex items-center space-x-2 bg-blue-500 text-white font-extrabold py-3 px-8 rounded-full text-xl shadow-lg shadow-blue-300/50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.35 6.64l-2.8 1.94 1.15 3.52c.07.24-.03.5-.24.6l-1.99 1.45c-.2.15-.46.15-.65 0l-.82-.63c-.1-.08-.24-.08-.33 0l-2.43 1.86c-.1.08-.2.12-.31.12-.13 0-.25-.04-.36-.12-.22-.16-.3-.44-.19-.7L8.9 9.3c.09-.27-.06-.55-.33-.64L4.85 7.49c-.29-.09-.59.07-.68.37-.09.3.07.6.37.69l12 3.6c.27.08.55-.07.64-.34l1.2-3.72c.1-.32-.08-.66-.4-.76z"/>
+                </svg>
+                <span>Наш ТГК — Канал Мууурманських Новин</span>
+            </a>
+        </div>
 
-    function drawChart(){
-      const w = chart.width, h = chart.height; chartCtx.clearRect(0,0,w,h);
-      // background
-      chartCtx.fillStyle='rgba(255,255,255,0.02)'; chartCtx.fillRect(0,0,w,h);
-      // grid
-      chartCtx.strokeStyle='rgba(255,255,255,0.04)'; chartCtx.lineWidth=1;
-      for(let i=0;i<4;i++){ chartCtx.beginPath(); chartCtx.moveTo(0,h/4*i); chartCtx.lineTo(w,h/4*i); chartCtx.stroke(); }
-      // line
-      chartCtx.beginPath(); const step = w/(timeline.length-1);
-      timeline.forEach((v,i)=>{
-        const x = i*step; const y = h - (v/100)*h;
-        if(i===0) chartCtx.moveTo(x,y); else chartCtx.lineTo(x,y);
-      });
-      chartCtx.strokeStyle='rgba(126,225,168,0.95)'; chartCtx.lineWidth=3; chartCtx.stroke();
-      // fill
-      chartCtx.lineTo(w,h); chartCtx.lineTo(0,h); chartCtx.closePath(); chartCtx.fillStyle='rgba(126,225,168,0.06)'; chartCtx.fill();
-    }
+        <!-- Контент Вкладок -->
+        <div id="content-area">
+            <!-- 1. Секція Новин -->
+            <div id="view-news" class="view-content grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Новина 1 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow border-t-4 border-yellow-600">
+                    <span class="text-sm font-semibold text-yellow-700">Офіційно</span>
+                    <h2 class="text-2xl font-bold mt-2">Річний Звіт: Запас сіна у Заполяр'ї на рекордному рівні</h2>
+                    <p class="mt-4 text-gray-700">Міністерство продовольства повідомило про стабілізацію цін на трав'яні тюки. Корови можуть спати спокійно: дефіциту не передбачається. Влада планує провести "Сіновий Фестиваль".</p>
+                    <p class="text-xs mt-3 text-gray-500">2 години тому | Сектор "Трав'яний"</p>
+                </div>
 
-    function updateStats(){
-      const cowCount = territories.filter(t=>t.owner==='cow').length; const pigCount = territories.length - cowCount;
-      document.getElementById('cowPercent').textContent = Math.round(cowCount/territories.length*100) + '%';
-      document.getElementById('pigPercent').textContent = Math.round(pigCount/territories.length*100) + '%';
-    }
+                <!-- Новина 2 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow border-t-4 border-blue-600">
+                    <span class="text-sm font-semibold text-blue-700">Події</span>
+                    <h2 class="text-2xl font-bold mt-2">Сенсація: Унікальна Корова-Спортсменка навчилася бігати боком</h2>
+                    <p class="mt-4 text-gray-700">Зірка місцевого бігового клубу "Рябий Спринтер" розробила нову техніку пересування. Тренери в захваті, конкуренти збентежені. Це може змінити світовий спорт!</p>
+                    <p class="text-xs mt-3 text-gray-500">Вчора | Сектор "Спортивний"</p>
+                </div>
 
-    // click on map to flip territory
-    mapCanvas.addEventListener('click',(e)=>{
-      const rect = mapCanvas.getBoundingClientRect(); const x = e.clientX-rect.left; const y = e.clientY-rect.top;
-      const cellW = mapCanvas.width/cols, cellH = mapCanvas.height/rows;
-      const c = Math.floor(x/cellW), r = Math.floor(y/cellH);
-      const idx = territories.findIndex(t=>t.r===r && t.c===c);
-      if(idx>=0){ territories[idx].owner = territories[idx].owner==='cow'? 'pig':'cow'; territories[idx].strength = rand(20,90); drawMap(); drawChart(); updateStats(); }
-    });
+                <!-- Новина 3 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow border-t-4 border-green-600">
+                    <span class="text-sm font-semibold text-green-700">Наука</span>
+                    <h2 class="text-2xl font-bold mt-2">Експеримент: Виявлено, що корови краще бачать світ у пастельних тонах</h2>
+                    <p class="mt-4 text-gray-700">Група вчених із Мууурманського Університету Корівництва завершила дослідження. Рекомендовано фарбувати будинки у ніжно-рожевий та м'ятний кольори для "візуальної гармонії".</p>
+                    <p class="text-xs mt-3 text-gray-500">4 години тому | Сектор "Ветеринарний"</p>
+                </div>
 
-    // start sizes
-    setTimeout(resizeMap,50);
+                <!-- Новина 4 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow border-t-4 border-pink-600 md:col-span-3">
+                    <span class="text-sm font-semibold text-pink-700">Культура</span>
+                    <h2 class="text-2xl font-bold mt-2">Мууузичний Фестиваль: "Симфонія Травлення" зібрала тисячі слухачів</h2>
+                    <p class="mt-4 text-gray-700">Головна подія року відбулася на Центральній Луці. Видатні композитори представили твори, засновані на ритмічному пережовуванні. Головний гість — "Квартет із Чотирьох Вим’я".</p>
+                    <p class="text-xs mt-3 text-gray-500">Тиждень тому | Сектор "Мистецький"</p>
+                </div>
+                
+            </div>
 
-    // --- GAMES: improved two mini-games on single canvas ---
-    const gameCanvas = document.getElementById('gameCanvas'); const gctx = gameCanvas.getContext('2d');
-    let gameState = {mode:'catch',running:false,score:0,time:0,player:{x:150,y:260,w:60,h:40},objects:[],best:0,interval:null,ts:null};
+            <!-- 2. Секція Міні-Ігор -->
+            <div id="view-games" class="view-content hidden p-6 bg-white rounded-xl shadow-xl text-center">
+                <h2 class="text-3xl font-bold mb-6 text-yellow-800">🥛 Мууу-Клікер: Надій Свій Вим'я!</h2>
+                <p class="text-xl mb-8">Натискайте кнопку, щоб зібрати якомога більше **Мууу-Монет** та стати найбагатшою Коровою Мууурманська!</p>
+                
+                <p class="text-6xl font-extrabold mb-8">
+                    <span id="milk-counter" class="text-yellow-600">0</span> 💰
+                </p>
 
-    function resizeGame(){ gameCanvas.width = gameCanvas.clientWidth; gameCanvas.height = gameCanvas.clientHeight; drawGame(); }
-    window.addEventListener('resize',resizeGame); setTimeout(resizeGame,50);
+                <button id="milk-button" class="bg-green-500 hover:bg-green-600 text-white font-black py-4 px-10 rounded-full text-2xl shadow-lg hover:shadow-xl transition-all">
+                    Надоїти Молока! 🐄
+                </button>
 
-    document.querySelectorAll('[data-game]').forEach(b=>b.addEventListener('click',e=>{ document.querySelectorAll('[data-game]').forEach(x=>x.classList.remove('active')); e.currentTarget.classList.add('active'); gameState.mode=e.currentTarget.dataset.game; resetGame(); }));
-    document.getElementById('startGameBtn').addEventListener('click',()=>{ if(!gameState.running) startGameLoop(); else stopGameLoop(); });
-    document.getElementById('resetGame').addEventListener('click',resetGame);
+                <div class="mt-10 p-4 bg-gray-100 rounded-lg max-w-sm mx-auto">
+                    <h3 class="text-xl font-semibold mb-2">Автоматизація (1000 💰)</h3>
+                    <p id="automation-status" class="text-gray-700 mb-4">Потрібно 1000 Мууу-Монет. Наразі: 0/1 Автоматів.</p>
+                    <button id="buy-automation" class="bg-blue-500 text-white py-2 px-4 rounded-lg text-lg disabled:opacity-50 hover:bg-blue-600 transition-colors">
+                        Купити Автомат
+                    </button>
+                </div>
+            </div>
 
-    function resetGame(){ stopGameLoop(); gameState.score=0; gameState.time=0; gameState.objects=[]; gameState.player.x = gameCanvas.width/2 - gameState.player.w/2; gameState.best = Math.max(gameState.best, parseInt(localStorage.getItem('best')||0)); document.getElementById('gameScore').textContent=0; document.getElementById('gameTime').textContent=0; drawGame(); }
+            <!-- 3. Секція Бойових Дій (Canvas) -->
+            <div id="view-war" class="view-content hidden p-6 bg-white rounded-xl shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-red-800">⚔️ Фронт "Корова vs Свиня" 🐖</h2>
+                <p class="text-xl mb-4 text-gray-700">Слідкуйте за ситуацією на кордоні з Південними Територіями. Інтерактивна карта показує поточну лінію розмежування.</p>
+                
+                <div class="p-4 bg-red-50 border border-red-200 rounded-lg text-center font-bold text-red-700 mb-6">
+                    <span id="war-status">Фронт стабільний, але Корови готуються до контратаки!</span>
+                </div>
 
-    function startGameLoop(){ gameState.running=true; gameState.ts = performance.now(); gameState.interval = requestAnimationFrame(gameLoop); document.getElementById('startGameBtn').textContent='Пауза'; }
-    function stopGameLoop(){ gameState.running=false; if(gameState.interval) cancelAnimationFrame(gameState.interval); gameState.interval=null; document.getElementById('startGameBtn').textContent='Старт'; localStorage.setItem('best', gameState.best); }
+                <div class="relative w-full aspect-[2/1] max-h-[500px] bg-gray-200 rounded-xl overflow-hidden">
+                    <canvas id="warMapCanvas"></canvas>
+                    <div class="absolute top-2 left-2 p-2 bg-green-700 text-white rounded-lg opacity-90 text-sm font-bold">
+                        🟢 ТЕРИТОРІЯ КОРІВ
+                    </div>
+                    <div class="absolute top-2 right-2 p-2 bg-red-700 text-white rounded-lg opacity-90 text-sm font-bold">
+                        🔴 ТЕРИТОРІЯ СВИНЕЙ
+                    </div>
+                </div>
 
-    function gameLoop(t){ if(!gameState.running) return; const dt = (t - (gameState.lastT||t))/1000; gameState.lastT = t; gameState.time += dt; document.getElementById('gameTime').textContent = Math.floor(gameState.time);
-      // spawn
-      if(Math.random()<0.02 + Math.min(0.12, gameState.time/60)) spawnObject();
-      // update objects
-      for(let i=gameState.objects.length-1;i>=0;i--){ const o=gameState.objects[i]; o.y += o.vy*dt; if(o.y>gameCanvas.height+40) gameState.objects.splice(i,1); }
-      // collisions
-      for(let i=gameState.objects.length-1;i>=0;i--){ const o=gameState.objects[i]; if(collide(gameState.player,o)){ if(gameState.mode==='catch' && o.type==='bucket'){ gameState.score+=1; gameState.objects.splice(i,1);} else { // dodge mode lose
-            gameState.score = Math.max(0, gameState.score-1); gameState.objects.splice(i,1); }
-      }}
-      // update UI
-      document.getElementById('gameScore').textContent = gameState.score;
-      gameState.best = Math.max(gameState.best, gameState.score);
-      drawGame(); gameState.interval = requestAnimationFrame(gameLoop);
-    }
+                <div class="mt-6 flex flex-wrap justify-center gap-4">
+                    <button onclick="simulateAdvance('cow')" class="bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 shadow-md transition-colors">
+                        Корови: ВПЕРЕД! 🚀
+                    </button>
+                    <button onclick="simulateAdvance('pig')" class="bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 shadow-md transition-colors">
+                        Свині: КОНТРАТАКА! 💣
+                    </button>
+                    <button onclick="resetMap()" class="bg-gray-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-600 shadow-md transition-colors">
+                        Скинути Карту 🔄
+                    </button>
+                </div>
+            </div>
 
-    function spawnObject(){ if(gameState.mode==='catch'){ // buckets falling
-        const x = Math.random()*(gameCanvas.width-40)+20; gameState.objects.push({x,y:-40,w:40,h:40,vy:80+Math.random()*80,type:'bucket'});
-      } else { // dodge: pigs moving horizontally
-        const side = Math.random()<0.5?-1:1; const y = Math.random()*(gameCanvas.height-120)+40; const vy=0; const vx = (50+Math.random()*120)*side; const x = side<0?gameCanvas.width+40:-40; gameState.objects.push({x,y,w:48,h:36,vx,vy,type:'pig'});
-      }}
+        </div>
 
-    // simple keyboard control
-    window.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft') gameState.player.x -= 40; if(e.key==='ArrowRight') gameState.player.x +=40; gameState.player.x = Math.max(0, Math.min(gameCanvas.width-gameState.player.w, gameState.player.x)); drawGame(); });
+        <!-- Підвал -->
+        <footer class="text-center mt-12 pt-6 border-t-2 border-yellow-300 text-gray-500">
+            <p>&copy; 2025 Новини Мууурманська. Всі права захищені та запатентовані.</p>
+        </footer>
 
-    function collide(a,b){ return !(a.x+a.w < b.x || a.x > b.x + (b.w||40) || a.y + a.h < b.y || a.y > b.y + (b.h||40)); }
+    </div>
 
-    function drawGame(){ const c = gctx; const w=gameCanvas.width, h=gameCanvas.height; c.clearRect(0,0,w,h);
-      // background
-      const grad = c.createLinearGradient(0,0,0,h); grad.addColorStop(0,'#052129'); grad.addColorStop(1,'#08323b'); c.fillStyle=grad; c.fillRect(0,0,w,h);
-      // player (cow) — stylized
-      c.fillStyle='#7ee1a8'; c.fillRect(gameState.player.x, gameState.player.y, gameState.player.w, gameState.player.h); c.fillStyle='#032'; c.fillRect(gameState.player.x+10, gameState.player.y+6, 12, 12);
-      // objects
-      gameState.objects.forEach(o=>{
-        if(o.type==='bucket'){ c.fillStyle='#ffd166'; c.beginPath(); c.arc(o.x+20,o.y+20,18,0,Math.PI*2); c.fill(); c.fillStyle='#663c00'; c.fillRect(o.x+8,o.y+26,24,6);} else { c.fillStyle='#ff8fa3'; c.fillRect(o.x,o.y,o.w,o.h); c.fillStyle='#fff'; c.fillRect(o.x+6,o.y+6,8,6); }
-        // update moving pigs
-        if(o.vx) o.x += o.vx*(1/60);
-      });
-      // HUD
-      c.fillStyle='rgba(0,0,0,0.2)'; c.fillRect(8,8,160,36); c.fillStyle='#fff'; c.font='14px Inter'; c.fillText('Режим: '+(gameState.mode==='catch'?'Поймай ведро':'Уклоняйся от свинок'),16,30);
-    }
+    <!-- JavaScript Логіка -->
+    <script>
+        // --- 1. Логіка Перемикання Вкладок (SPA) ---
+        function showView(viewName) {
+            // Приховуємо всі контентні секції
+            document.querySelectorAll('.view-content').forEach(el => {
+                el.classList.add('hidden');
+            });
+            // Деактивуємо всі кнопки
+            document.querySelectorAll('.tab-button').forEach(el => {
+                el.classList.remove('active', 'bg-yellow-500');
+                el.classList.add('bg-yellow-400');
+            });
 
-    // initial game selection
-    document.querySelector('[data-game="catch"]').classList.add('active'); gameState.mode='catch'; resetGame();
+            // Показуємо потрібну секцію
+            const viewElement = document.getElementById('view-' + viewName);
+            const tabButton = document.getElementById('tab-' + viewName);
+            if (viewElement) viewElement.classList.remove('hidden');
+            if (tabButton) {
+                tabButton.classList.add('active', 'bg-yellow-500');
+                tabButton.classList.remove('bg-yellow-400');
+            }
 
-    // --- helpers ---
-    resizeMap(); resizeGame();
-  </script>
+            // Якщо перейшли на карту, запускаємо її анімацію
+            if (viewName === 'war') {
+                if (!warMapRunning) startWarMap();
+            } else {
+                // В інших випадках можна зупинити, щоб не витрачати ресурси
+                stopWarMap();
+            }
+        }
+
+        // Ініціалізація на старті
+        document.addEventListener('DOMContentLoaded', () => {
+            showView('news'); // Починаємо з новин
+        });
+
+
+        // --- 2. Логіка Міні-Гри (Мууу-Клікер) ---
+        let milkCount = 0;
+        let automationBought = false;
+        const automationCost = 1000;
+        const milkButton = document.getElementById('milk-button');
+        const milkCounter = document.getElementById('milk-counter');
+        const buyAutomationButton = document.getElementById('buy-automation');
+        const automationStatus = document.getElementById('automation-status');
+
+        milkButton.addEventListener('click', () => {
+            milkCount += 1;
+            updateMilkDisplay();
+        });
+
+        buyAutomationButton.addEventListener('click', () => {
+            if (milkCount >= automationCost && !automationBought) {
+                milkCount -= automationCost;
+                automationBought = true;
+                updateMilkDisplay();
+                startAutomation();
+            }
+        });
+
+        function updateMilkDisplay() {
+            milkCounter.textContent = milkCount;
+            // Перевірка, чи можна купити автомат
+            if (!automationBought && milkCount >= automationCost) {
+                buyAutomationButton.disabled = false;
+                buyAutomationButton.textContent = 'КУПИТИ ЗА 1000 💰';
+            } else if (automationBought) {
+                buyAutomationButton.disabled = true;
+                buyAutomationButton.textContent = 'Автомат Встановлено';
+                automationStatus.textContent = 'Статус: Автоматизовано! +1 💰 щосекунди.';
+            } else {
+                buyAutomationButton.disabled = true;
+                buyAutomationButton.textContent = 'Потрібно 1000 💰';
+            }
+        }
+
+        function startAutomation() {
+            setInterval(() => {
+                if (automationBought) {
+                    milkCount += 1;
+                    updateMilkDisplay();
+                }
+            }, 1000);
+        }
+        
+        // Ініціалізація лічильника
+        updateMilkDisplay();
+
+        // --- 3. Логіка Карти Бойових Дій (Canvas) ---
+        const canvas = document.getElementById('warMapCanvas');
+        const ctx = canvas.getContext('2d');
+        const statusElement = document.getElementById('war-status');
+
+        let frontLine = []; // Масив Y-координат фронту
+        let animationFrameId = null;
+        let warMapRunning = false;
+        let advancementDirection = 0; // -1: Pigs advance, 1: Cows advance, 0: Stable
+
+        // Початкові параметри
+        const RESOLUTION = 50; // Кількість точок на лінії фронту
+        const BASE_Y_RATIO = 0.5; // Початкове положення (посередині)
+        const WOBBLE_RANGE = 20; // Діапазон випадкових коливань лінії
+
+        function initFrontLine() {
+            // Ініціалізуємо фронт трохи вище/нижче центру з невеликим випадковим шумом
+            frontLine = [];
+            for (let i = 0; i <= RESOLUTION; i++) {
+                // Випадкове зміщення відносно базової лінії
+                const noise = (Math.random() - 0.5) * WOBBLE_RANGE; 
+                frontLine.push(canvas.height * BASE_Y_RATIO + noise);
+            }
+        }
+
+        function drawMap() {
+            if (!canvas || !ctx) return;
+            const w = canvas.width;
+            const h = canvas.height;
+            const segmentWidth = w / RESOLUTION;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // 1. Малюємо Територію Свиней (Червоний, внизу)
+            ctx.fillStyle = '#b91c1c'; // Tailwind red-700
+            ctx.fillRect(0, 0, w, h);
+
+            // 2. Малюємо Територію Корів (Зелений, вгорі)
+            ctx.fillStyle = '#16a34a'; // Tailwind green-700
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(w, 0);
+
+            // Малюємо лінію фронту (верхній контур)
+            for (let i = 0; i <= RESOLUTION; i++) {
+                const x = i * segmentWidth;
+                const y = frontLine[i];
+                ctx.lineTo(x, y);
+            }
+            ctx.lineTo(0, h * BASE_Y_RATIO); // Ця лінія вже не потрібна
+            ctx.lineTo(0, 0);
+            ctx.closePath();
+            ctx.fill();
+
+
+            // 3. Малюємо Саму Лінію Фронту (випадкова товста лінія)
+            ctx.strokeStyle = '#facc15'; // Tailwind yellow-400
+            ctx.lineWidth = 6;
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(0, frontLine[0]);
+
+            for (let i = 1; i <= RESOLUTION; i++) {
+                const x = i * segmentWidth;
+                const y = frontLine[i];
+                ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+
+        function updateFrontLine() {
+            const ADVANCE_STEP = 0.05; // Швидкість поступу
+            const WOBBLE_SPEED = 0.05; // Швидкість коливань
+            const WOBBLE_STRENGTH = 10; // Сила коливань
+
+            for (let i = 0; i <= RESOLUTION; i++) {
+                // 1. Додаємо випадкові коливання
+                const noise = Math.sin(Date.now() * WOBBLE_SPEED + i) * WOBBLE_STRENGTH;
+                
+                // 2. Базове зміщення (Поступ)
+                let baseShift = 0;
+                if (advancementDirection === 1) { // Корови наступають
+                    baseShift = -ADVANCE_STEP;
+                    statusElement.textContent = 'Корови наступають! 🐮 Тиснуть по центру.';
+                    statusElement.classList.replace('text-red-700', 'text-green-700');
+                    statusElement.classList.replace('bg-red-50', 'bg-green-50');
+                } else if (advancementDirection === -1) { // Свині наступають
+                    baseShift = ADVANCE_STEP;
+                    statusElement.textContent = 'Свині намагаються контратакувати! 🐷 Ситуація напружена.';
+                    statusElement.classList.replace('text-green-700', 'text-red-700');
+                    statusElement.classList.replace('bg-green-50', 'bg-red-50');
+                } else {
+                    statusElement.textContent = 'Фронт стабільний, але Корови готуються до контратаки! 🛡️';
+                    statusElement.classList.add('text-red-700');
+                    statusElement.classList.add('bg-red-50');
+                }
+
+
+                // Обмеження, щоб лінія не виходила за межі 10% і 90% висоти
+                let newY = frontLine[i] + baseShift + noise;
+                newY = Math.max(canvas.height * 0.1, Math.min(canvas.height * 0.9, newY));
+                
+                frontLine[i] = newY;
+            }
+        }
+
+        function animateWarMap() {
+            if (!warMapRunning) return;
+            
+            updateFrontLine();
+            drawMap();
+            
+            animationFrameId = requestAnimationFrame(animateWarMap);
+        }
+
+        function startWarMap() {
+            if (warMapRunning) return;
+            warMapRunning = true;
+            resizeCanvas();
+            if (frontLine.length === 0) initFrontLine();
+            animateWarMap();
+        }
+        
+        function stopWarMap() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+                warMapRunning = false;
+            }
+        }
+
+        // Функція для симуляції наступу
+        window.simulateAdvance = function(faction) {
+            if (faction === 'cow') {
+                advancementDirection = 1;
+                // Автоматичне повернення до стабільного стану через 5 секунд
+                setTimeout(() => advancementDirection = 0, 5000); 
+            } else if (faction === 'pig') {
+                advancementDirection = -1;
+                setTimeout(() => advancementDirection = 0, 5000); 
+            }
+        }
+
+        // Функція для скидання карти
+        window.resetMap = function() {
+            initFrontLine();
+            advancementDirection = 0;
+            statusElement.textContent = 'Карту скинуто. Починаємо з нейтральних позицій!';
+            drawMap();
+        }
+
+
+        // Обробка зміни розміру вікна для адаптивності Canvas
+        function resizeCanvas() {
+            if (!canvas) return;
+            // Визначаємо розміри контейнера
+            const container = canvas.parentElement;
+            const size = container.offsetWidth;
+
+            // Встановлюємо розміри Canvas. ВАЖЛИВО: setting width/height directly
+            canvas.width = size;
+            canvas.height = size / 2; // Зберігаємо співвідношення 2:1
+
+            if (frontLine.length === 0) initFrontLine();
+            drawMap(); // Перемалювати після зміни розміру
+        }
+
+        window.addEventListener('resize', () => {
+             // Перезапускаємо карту, щоб перемалювати її в новому розмірі
+            if (warMapRunning) {
+                stopWarMap();
+                resizeCanvas();
+                startWarMap();
+            } else {
+                 resizeCanvas();
+            }
+        });
+        
+        // Ініціалізація карти на завантаженні (не запускаємо анімацію, поки не перейшли на вкладку)
+        window.onload = function() {
+            resizeCanvas();
+            initFrontLine();
+            drawMap();
+            // showView('news'); // Вже викликається у DOMContentLoaded
+        }
+
+    </script>
 </body>
 </html>
